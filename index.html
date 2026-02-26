@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClawFlowGen: 基于物理并行的通用处理器演化方法学</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+        
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        
+        .step-card {
+            transition: all 0.3s ease;
+        }
+        
+        .step-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .alu-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+        
+        .alu-cell {
+            aspect-ratio: 1;
+            background-color: #e2e8f0;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #64748b;
+            transition: all 0.5s ease;
+            position: relative;
+        }
+        
+        .alu-cell.active-cpu {
+            background-color: #3b82f6;
+            color: white;
+            border: 2px solid #1d4ed8;
+        }
+        
+        .alu-cell.active-npu {
+            background-color: #10b981;
+            color: white;
+            border: 2px solid #047857;
+        }
+        
+        .alu-cell.connected::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            width: 8px;
+            height: 2px;
+            background-color: #94a3b8;
+            z-index: 10;
+        }
+        
+        .alu-cell:nth-child(4n).connected::after {
+            display: none;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-xl font-bold text-slate-800 tracking-tight">ClawFlowGen <span class="text-blue-600">Explorer</span></span>
+                </div>
+                <div class="hidden sm:flex items-center space-x-8 text-sm font-medium text-slate-600">
+                    <a href="#intro" class="hover:text-blue-600 transition-colors">概述</a>
+                    <a href="#evolution" class="hover:text-blue-600 transition-colors">演化模型</a>
+                    <a href="#performance" class="hover:text-blue-600 transition-colors">性能数据</a>
+                    <a href="#algorithm" class="hover:text-blue-600 transition-colors">核心算法</a>
+                </div>
+                <div class="flex items-center sm:hidden">
+                    <button id="mobile-menu-btn" class="text-slate-500 hover:text-slate-700 focus:outline-none">
+                        <span class="text-2xl">☰</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden sm:hidden bg-white border-t border-slate-100 p-4 shadow-lg absolute w-full">
+            <div class="flex flex-col space-y-3">
+                <a href="#intro" class="text-slate-600 hover:text-blue-600 block">概述</a>
+                <a href="#evolution" class="text-slate-600 hover:text-blue-600 block">演化模型</a>
+                <a href="#performance" class="text-slate-600 hover:text-blue-600 block">性能数据</a>
+                <a href="#algorithm" class="text-slate-600 hover:text-blue-600 block">核心算法</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header id="intro" class="bg-white pt-12 pb-16">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider text-blue-600 uppercase bg-blue-50 rounded-full">
+                下一代芯片设计方法学
+            </div>
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-slate-900 mb-6 leading-tight">
+                不再"写"芯片，而是<span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500">"育"</span>芯片
+            </h1>
+            <p class="text-xl text-slate-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+                传统架构设计受限于串行思维。ClawFlowGen 提出一种基于物理并行的元编程方法，实现了从裸运算单元到高性能处理器的<strong>自动演化</strong>。
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
+                <div class="bg-slate-50 p-6 rounded-xl border border-slate-100">
+                    <div class="text-3xl font-bold text-blue-600 mb-1">11x</div>
+                    <div class="text-sm font-medium text-slate-500">开发速度提升</div>
+                </div>
+                <div class="bg-slate-50 p-6 rounded-xl border border-slate-100">
+                    <div class="text-3xl font-bold text-teal-600 mb-1">92%</div>
+                    <div class="text-sm font-medium text-slate-500">A72 核心性能</div>
+                </div>
+                <div class="bg-slate-50 p-6 rounded-xl border border-slate-100">
+                    <div class="text-3xl font-bold text-purple-600 mb-1">8 发射</div>
+                    <div class="text-sm font-medium text-slate-500">自动乱序并行</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- Interactive Evolution Model Section -->
+        <section id="evolution" class="py-16 bg-slate-50">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-slate-900">ClawFlowGen 演化模型</h2>
+                    <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">
+                        本节展示处理器如何从无序的运算算子，通过"由内向外"的生长算法，自动构建为高性能 CPU 或 NPU。点击下方步骤体验演化过程。
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+                    <div class="lg:col-span-4 space-y-4">
+                        <button onclick="setStage(1)" id="btn-stage-1" class="step-card w-full text-left p-5 bg-white rounded-lg shadow-sm border-l-4 border-blue-500 focus:outline-none">
+                            <h3 class="font-bold text-slate-800">第一阶段：物理平铺 (Physical Tiling)</h3>
+                            <p class="text-sm text-slate-500 mt-1">系统在 t=0 时刻，根据预设并行度 P，在物理空间铺设独立的运算算子（Add, Mul 等）。</p>
+                        </button>
+                        <button onclick="setStage(2)" id="btn-stage-2" class="step-card w-full text-left p-5 bg-white rounded-lg shadow-sm border-l-4 border-transparent hover:border-blue-300 focus:outline-none">
+                            <h3 class="font-bold text-slate-800">第二阶段：冲突探测与互连</h3>
+                            <p class="text-sm text-slate-500 mt-1">扫描 I/O 需求。当多个单元请求同一资源时，自动生成仲裁逻辑与互连通路。</p>
+                        </button>
+                        <button onclick="setStage(3)" id="btn-stage-3" class="step-card w-full text-left p-5 bg-white rounded-lg shadow-sm border-l-4 border-transparent hover:border-blue-300 focus:outline-none">
+                            <h3 class="font-bold text-slate-800">第三阶段：指令映射</h3>
+                            <p class="text-sm text-slate-500 mt-1">应用译码掩码。生成 CPU（乱序分支预测）或 NPU（静态时延 DMA）控制逻辑。</p>
+                        </button>
+                        <div class="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                            <div class="font-semibold text-blue-800 text-sm mb-2">当前模式控制</div>
+                            <div class="flex items-center space-x-4">
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="mode" value="cpu" checked onchange="updateVisualization()" class="text-blue-600 focus:ring-blue-500">
+                                    <span class="ml-2 text-sm text-slate-700">Claw-C (CPU)</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="mode" value="npu" onchange="updateVisualization()" class="text-teal-600 focus:ring-teal-500">
+                                    <span class="ml-2 text-sm text-slate-700">Claw-N (NPU)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-8">
+                        <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
+                            <div class="flex justify-between items-center mb-6">
+                                <h4 class="font-bold text-slate-700" id="viz-title">处理器核心视图: 初始状态</h4>
+                                <div class="flex space-x-2 text-xs">
+                                    <span class="flex items-center"><span class="w-3 h-3 bg-slate-200 rounded mr-1"></span> 空闲</span>
+                                    <span class="flex items-center"><span class="w-3 h-3 bg-blue-500 rounded mr-1"></span> 逻辑/控制</span>
+                                    <span class="flex items-center"><span class="w-3 h-3 bg-green-500 rounded mr-1"></span> 运算</span>
+                                </div>
+                            </div>
+                            <div id="processor-grid" class="alu-grid h-64 md:h-80 w-full max-w-md mx-auto relative"></div>
+                            <div id="viz-description" class="mt-6 p-4 bg-slate-50 rounded-lg text-sm text-slate-600 min-h-[80px]">
+                                等待初始化...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Performance Comparison Section -->
+        <section id="performance" class="py-16 bg-white">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-10">
+                    <h2 class="text-3xl font-bold text-slate-900">实验结果与性能对比</h2>
+                    <p class="mt-4 text-lg text-slate-600">
+                        在 7nm 工艺库下，我们将自动生成的 Claw-C/N 变体与 Cortex-A72 进行了对比。
+                        结果显示，该方法在保持高性能的同时，显著缩短了硬件开发周期。
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-bold text-slate-800 mb-4">综合指标对比</h3>
+                        <div class="chart-container">
+                            <canvas id="metricsChart"></canvas>
+                        </div>
+                        <p class="text-sm text-slate-500 mt-4 text-center">
+                            Claw-C (8发射) 在开发周期仅为人工核心 1/11 的情况下，达到了 92% 的 CoreMark 性能。
+                        </p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-bold text-slate-800 mb-4">复杂度与时序收敛</h3>
+                        <div class="chart-container">
+                            <canvas id="scalingChart"></canvas>
+                        </div>
+                        <p class="text-sm text-slate-500 mt-4 text-center">
+                            互连复杂度呈 O(P²) 增长，但在并行度 P ≤ 16 时，时序违例 (Slack) 保持安全区间。
+                        </p>
+                    </div>
+                </div>
+                <div class="mt-12 overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-200 border border-slate-200 rounded-lg">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">指标</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Cortex-A72 (参考)</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-blue-600 uppercase tracking-wider bg-blue-50">Claw-C (CPU变体)</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-teal-600 uppercase tracking-wider bg-teal-50">Claw-N (NPU变体)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-slate-200 text-sm">
+                            <tr>
+                                <td class="px-6 py-4 font-medium text-slate-900">并行发射宽度</td>
+                                <td class="px-6 py-4 text-slate-500">3-way</td>
+                                <td class="px-6 py-4 text-blue-700 font-semibold bg-blue-50">8-way (Auto)</td>
+                                <td class="px-6 py-4 text-teal-700 font-semibold bg-teal-50">256-PE (Systolic)</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 font-medium text-slate-900">峰值频率 (GHz)</td>
+                                <td class="px-6 py-4 text-slate-500">2.5</td>
+                                <td class="px-6 py-4 text-blue-700 bg-blue-50">2.1</td>
+                                <td class="px-6 py-4 text-teal-700 bg-teal-50">1.8</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 font-medium text-slate-900">设计周期 (人/月)</td>
+                                <td class="px-6 py-4 text-slate-500">24</td>
+                                <td class="px-6 py-4 text-blue-700 font-bold bg-blue-50">2</td>
+                                <td class="px-6 py-4 text-teal-700 font-bold bg-teal-50">1.5</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Algorithm Explorer Section -->
+        <section id="algorithm" class="py-16 bg-slate-50">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-slate-900">自动仲裁算法演示</h2>
+                    <p class="mt-4 text-slate-600">
+                        当多个并行单元请求同一物理资源时，AutoInterconnect 算法会生成仲裁逻辑。
+                        试调整下方的请求向量权重，观察仲裁优先级变化。
+                    </p>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-lg border border-slate-200">
+                    <div class="text-center mb-8 font-mono bg-slate-900 text-green-400 p-4 rounded-lg overflow-x-auto">
+                        A(s) = Σ(δᵢ · Gᵢ)
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div class="space-y-6">
+                            <h4 class="font-bold text-slate-700">输入参数 (Request Vectors)</h4>
+                            <div>
+                                <label class="flex justify-between text-sm font-medium text-slate-700 mb-1">
+                                    <span>Core 1 请求权重 (δ₁)</span>
+                                    <span id="val-d1" class="text-blue-600">0.8</span>
+                                </label>
+                                <input type="range" min="0" max="1" step="0.1" value="0.8" id="input-d1" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                            </div>
+                            <div>
+                                <label class="flex justify-between text-sm font-medium text-slate-700 mb-1">
+                                    <span>Core 2 请求权重 (δ₂)</span>
+                                    <span id="val-d2" class="text-blue-600">0.5</span>
+                                </label>
+                                <input type="range" min="0" max="1" step="0.1" value="0.5" id="input-d2" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                            </div>
+                            <div>
+                                <label class="flex justify-between text-sm font-medium text-slate-700 mb-1">
+                                    <span>Core 3 请求权重 (δ₃)</span>
+                                    <span id="val-d3" class="text-blue-600">0.9</span>
+                                </label>
+                                <input type="range" min="0" max="1" step="0.1" value="0.9" id="input-d3" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 p-6 rounded-lg flex flex-col justify-center">
+                            <h4 class="font-bold text-slate-700 mb-4 text-center">仲裁结果 (Arbitration Result)</h4>
+                            <div class="space-y-3" id="arbitration-results"></div>
+                            <p class="text-xs text-slate-400 mt-4 text-center">*模拟基于 LRU 的门控优先级 (Gᵢ) 计算</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-900 text-slate-300 py-12">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-2xl font-bold text-white mb-4">ClawFlowGen</h2>
+            <p class="mb-8 max-w-2xl mx-auto">
+                物理并行优先设计思想证明了敏捷芯片开发的可行性。未来，我们将见证芯片从"手工设计"向"自动生长"的范式转移。
+            </p>
+            <div class="border-t border-slate-800 pt-8 text-sm text-slate-500">
+                <p>联系: xiao.lin@ia.ac.cn | 组织: @openclawdchip</p>
+                <p class="mt-2">基于 ClawFlowGen 学术论文生成 | Interactive Visualization</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // State Management
+        const state = {
+            stage: 1,
+            mode: 'cpu',
+            d1: 0.8,
+            d2: 0.5,
+            d3: 0.9
+        };
+
+        // DOM Elements
+        const gridEl = document.getElementById('processor-grid');
+        const vizTitle = document.getElementById('viz-title');
+        const vizDesc = document.getElementById('viz-description');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        // Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            initGrid();
+            setStage(1);
+            initCharts();
+            updateArbitration();
+            
+            ['d1', 'd2', 'd3'].forEach(id => {
+                document.getElementById(`input-${id}`).addEventListener('input', (e) => {
+                    state[id] = parseFloat(e.target.value);
+                    document.getElementById(`val-${id}`).textContent = state[id];
+                    updateArbitration();
+                });
+            });
+            
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        });
+
+        // Visualization Logic
+        function initGrid() {
+            gridEl.innerHTML = '';
+            for (let i = 0; i < 16; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'alu-cell';
+                cell.id = `alu-${i}`;
+                cell.textContent = `OP`;
+                gridEl.appendChild(cell);
+            }
+        }
+
+        function setStage(stageNum) {
+            state.stage = stageNum;
+            [1, 2, 3].forEach(n => {
+                const btn = document.getElementById(`btn-stage-${n}`);
+                if (n === stageNum) {
+                    btn.classList.add('border-blue-500');
+                    btn.classList.remove('border-transparent', 'hover:border-blue-300');
+                } else {
+                    btn.classList.remove('border-blue-500');
+                    btn.classList.add('border-transparent', 'hover:border-blue-300');
+                }
+            });
+            updateVisualization();
+        }
+
+        function updateVisualization() {
+            const cells = document.querySelectorAll('.alu-cell');
+            cells.forEach(cell => {
+                cell.className = 'alu-cell';
+                cell.textContent = 'OP';
+            });
+
+            if (state.stage === 1) {
+                vizTitle.textContent = "阶段 1: 物理平铺 (Tiling)";
+                vizDesc.innerHTML = "算子集合 O = {f_add, f_mul, ...} 被平铺在物理空间。当前为独立的孤岛状态，无互连逻辑。";
+                cells.forEach((cell, idx) => {
+                    setTimeout(() => {
+                        cell.textContent = ['ADD', 'MUL', 'MAC', 'ALU'][idx % 4];
+                        cell.style.opacity = '1';
+                    }, idx * 30);
+                });
+            } else if (state.stage === 2) {
+                vizTitle.textContent = "阶段 2: 自动互连 (Auto Interconnect)";
+                vizDesc.innerHTML = "AutoInterconnect 算法扫描 I/O 需求。检测到物理资源冲突，开始生成仲裁逻辑连线（灰色连线）。系统复杂度上升。";
+                cells.forEach((cell, idx) => {
+                    cell.textContent = ['ADD', 'MUL', 'MAC', 'ALU'][idx % 4];
+                    if (idx % 4 !== 3) {
+                        cell.classList.add('connected');
+                    }
+                });
+            } else if (state.stage === 3) {
+                const isCpu = state.mode === 'cpu';
+                vizTitle.textContent = `阶段 3: 指令映射 (${isCpu ? 'CPU 模式' : 'NPU 模式'})`;
+                if (isCpu) {
+                    vizDesc.innerHTML = "<strong>CPU 模式 (Claw-C):</strong> 生成动态分支预测器和乱序控制逻辑。核心变得复杂，旨在处理通用计算的条件跳转。";
+                    cells.forEach((cell, idx) => {
+                        cell.textContent = ['ALU', 'BR', 'LD', 'ST'][idx % 4];
+                        if (idx % 4 !== 3) cell.classList.add('connected');
+                        if ([0, 2, 5, 8, 10, 15].includes(idx)) {
+                            cell.classList.add('active-cpu');
+                        }
+                    });
+                } else {
+                    vizDesc.innerHTML = "<strong>NPU 模式 (Claw-N):</strong> 生成静态时延确定的 DMA 控制器。形成脉动阵列结构，数据流向高度规则化，适合张量计算。";
+                    cells.forEach((cell, idx) => {
+                        cell.textContent = 'MAC';
+                        if (idx % 4 !== 3) cell.classList.add('connected');
+                        cell.classList.add('active-npu');
+                    });
+                }
+            }
+        }
+
+        // Arbitration Logic
+        function updateArbitration() {
+            const cores = [
+                { name: 'Core 1', w: state.d1, g: 0.9, color: 'text-blue-600' },
+                { name: 'Core 2', w: state.d2, g: 0.8, color: 'text-teal-600' },
+                { name: 'Core 3', w: state.d3, g: 0.7, color: 'text-purple-600' }
+            ];
+            cores.forEach(c => c.score = c.w * c.g);
+            cores.sort((a, b) => b.score - a.score);
+            
+            const container = document.getElementById('arbitration-results');
+            container.innerHTML = '';
+            cores.forEach((core, index) => {
+                const width = (core.score / 1.0) * 100;
+                const html = `
+                    <div class="relative">
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="font-bold ${index === 0 ? core.color : 'text-slate-500'}">
+                                ${index + 1}. ${core.name}
+                            </span>
+                            <span class="text-slate-400">Score: ${core.score.toFixed(2)}</span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2.5">
+                            <div class="bg-slate-600 h-2.5 rounded-full" style="width: ${width}%; opacity: ${1 - (index * 0.3)}"></div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        }
+
+        // Charts
+        function initCharts() {
+            const ctx1 = document.getElementById('metricsChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['峰值频率 (GHz)', '功耗效率 (DMIPS/mW)', '开发周期 (月)'],
+                    datasets: [
+                        { label: 'Cortex-A72', data: [2.5, 100, 24], backgroundColor: '#94a3b8', borderRadius: 4 },
+                        { label: 'Claw-C (Auto)', data: [2.1, 88, 2], backgroundColor: '#3b82f6', borderRadius: 4 },
+                        { label: 'Claw-N (NPU)', data: [1.8, 145, 1.5], backgroundColor: '#10b981', borderRadius: 4 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } },
+                    scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } }
+                }
+            });
+
+            const ctx2 = document.getElementById('scalingChart').getContext('2d');
+            const parallelism = [2, 4, 8, 16, 32];
+            const connectivity = parallelism.map(p => p * p * 0.5);
+            const timingSlack = parallelism.map(p => Math.max(0, 10 - (p * 0.5)));
+            
+            new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: parallelism,
+                    datasets: [
+                        { label: '互连复杂度 (Complexity)', data: connectivity, borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.1)', fill: true, tension: 0.4, yAxisID: 'y' },
+                        { label: '时序余量 (Timing Slack)', data: timingSlack, borderColor: '#10b981', borderDash: [5, 5], tension: 0.4, yAxisID: 'y1' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: { legend: { position: 'bottom' }, title: { display: true, text: '并行度 P 增加时的趋势' } },
+                    scales: { x: { title: { display: true, text: '并行度 (Parallelism P)' } }, y: { type: 'linear', display: true, position: 'left', title: { display: true, text: '复杂度 (Arbitrary Units)' } }, y1: { type: 'linear', display: true, position: 'right', title: { display: true, text: '时序余量 (Slack)' }, grid: { drawOnChartArea: false } } }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
