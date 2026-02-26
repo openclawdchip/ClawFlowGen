@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClawFlowGen 概念图</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        h1 {
+            text-align: center;
+            color: #1e293b;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-bottom: 50px;
+        }
+        .concept-diagram {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+        svg { width: 100%; height: auto; display: block; }
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #475569;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+        .info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-left: 4px solid #3b82f6;
+        }
+        .info-card h3 {
+            color: #1e293b;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+        .info-card p {
+            color: #64748b;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .core-concept {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 16px;
+            margin: 40px 0;
+            text-align: center;
+        }
+        .core-concept h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        .core-concept p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+        .download-btn {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            margin-top: 20px;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        .download-btn:hover { background: #1d4ed8; }
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ClawFlowGen 概念架构图</h1>
+        <p class="subtitle">基于物理并行的处理器自动生成方法学</p>
+        
+        <div class="core-concept">
+            <h2>🎯 核心思想</h2>
+            <p>"所有数字电路在物理上都是并行的。我们不再'写'芯片，而是'育'芯片。"<br>
+            通过四阶段演化算法，从运算算子自动生长出完整的 CPU/NPU 系统。</p>
+        </div>
+        
+        <div class="concept-diagram">
+            <svg viewBox="0 0 1200 750" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#3b82f6"/>
+                        <stop offset="100%" style="stop-color:#1d4ed8"/>
+                    </linearGradient>
+                    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#10b981"/>
+                        <stop offset="100%" style="stop-color:#047857"/>
+                    </linearGradient>
+                    <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#f59e0b"/>
+                        <stop offset="100%" style="stop-color:#d97706"/>
+                    </linearGradient>
+                    <linearGradient id="grad4" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#8b5cf6"/>
+                        <stop offset="100%" style="stop-color:#6d28d9"/>
+                    </linearGradient>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+                    </marker>
+                    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feDropShadow dx="2" dy="4" stdDeviation="3" flood-opacity="0.2"/>
+                    </filter>
+                </defs>
+                
+                <!-- Title -->
+                <text x="600" y="35" text-anchor="middle" font-size="22" font-weight="bold" fill="#1e293b">
+                    ClawFlowGen 四阶段演化流程
+                </text>
+                
+                <!-- Phase 1 -->
+                <g transform="translate(50, 70)">
+                    <rect x="0" y="0" width="240" height="160" rx="12" fill="url(#grad1)" filter="url(#shadow)"/>
+                    <text x="120" y="28" text-anchor="middle" fill="white" font-size="15" font-weight="bold">阶段 1: 物理平铺</text>
+                    <text x="120" y="45" text-anchor="middle" fill="white" font-size="10" opacity="0.9">Physical Tiling</text>
+                    <g transform="translate(20, 60)">
+                        <rect x="0" y="0" width="45" height="35" rx="4" fill="white" opacity="0.9"/>
+                        <rect x="55" y="0" width="45" height="35" rx="4" fill="white" opacity="0.9"/>
+                        <rect x="110" y="0" width="45" height="35" rx="4" fill="white" opacity="0.9"/>
+                        <rect x="0" y="45" width="45" height="35" rx="4" fill="white" opacity="0.9"/>
+                        <rect x="55" y="45" width="45" height="35" rx="4" fill="white" opacity="0.9"/>
+                        <rect x="110" y="45" width="45" height="35" rx="4" fill="white" opacity="0.9"/>
+                        <text x="22" y="22" text-anchor="middle" fill="#1d4ed8" font-size="9" font-weight="bold">ALU</text>
+                        <text x="77" y="22" text-anchor="middle" fill="#1d4ed8" font-size="9" font-weight="bold">MUL</text>
+                        <text x="132" y="22" text-anchor="middle" fill="#1d4ed8" font-size="9" font-weight="bold">FPU</text>
+                        <text x="22" y="67" text-anchor="middle" fill="#1d4ed8" font-size="9" font-weight="bold">MAC</text>
+                        <text x="77" y="67" text-anchor="middle" fill="#1d4ed8" font-size="9" font-weight="bold">ALU</text>
+                        <text x="132" y="67" text-anchor="middle" fill="#1d4ed8" font-size="9" font-weight="bold">MUL</text>
+                    </g>
+                </g>
+                
+                <!-- Arrow 1-2 -->
+                <path d="M 300 150 L 340 150" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <text x="320" y="140" text-anchor="middle" fill="#64748b" font-size="9">Auto-Connect</text>
+                
+                <!-- Phase 2 -->
+                <g transform="translate(350, 70)">
+                    <rect x="0" y="0" width="240" height="160" rx="12" fill="url(#grad2)" filter="url(#shadow)"/>
+                    <text x="120" y="28" text-anchor="middle" fill="white" font-size="15" font-weight="bold">阶段 2: 自动互连</text>
+                    <text x="120" y="45" text-anchor="middle" fill="white" font-size="10" opacity="0.9">Auto Interconnect</text>
+                    <g transform="translate(30, 65)">
+                        <circle cx="25" cy="15" r="12" fill="white" opacity="0.9"/>
+                        <circle cx="90" cy="15" r="12" fill="white" opacity="0.9"/>
+                        <rect x="0" y="40" width="180" height="35" rx="4" fill="white" opacity="0.9"/>
+                        <line x1="25" y1="27" x2="25" y2="40" stroke="white" stroke-width="2"/>
+                        <line x1="90" y1="27" x2="90" y2="40" stroke="white" stroke-width="2"/>
+                        <text x="90" y="62" text-anchor="middle" fill="#047857" font-size="9" font-weight="bold">Crossbar / Mesh / NoC</text>
+                    </g>
+                </g>
+                
+                <!-- Arrow 2-3 -->
+                <path d="M 600 150 L 640 150" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <text x="620" y="140" text-anchor="middle" fill="#64748b" font-size="9">Control</text>
+                
+                <!-- Phase 3 -->
+                <g transform="translate(650, 70)">
+                    <rect x="0" y="0" width="240" height="160" rx="12" fill="url(#grad3)" filter="url(#shadow)"/>
+                    <text x="120" y="28" text-anchor="middle" fill="white" font-size="15" font-weight="bold">阶段 3: 控制坍缩</text>
+                    <text x="120" y="45" text-anchor="middle" fill="white" font-size="10" opacity="0.9">Control Collapse</text>
+                    <g transform="translate(20, 65)">
+                        <rect x="0" y="0" width="200" height="40" rx="4" fill="white" opacity="0.9"/>
+                        <text x="100" y="17" text-anchor="middle" fill="#d97706" font-size="9" font-weight="bold">Decoder</text>
+                        <text x="100" y="32" text-anchor="middle" fill="#d97706" font-size="8">ISA → Control Signals</text>
+                        <rect x="0" y="50" width="95" height="35" rx="4" fill="white" opacity="0.9"/>
+                        <rect x="105" y="50" width="95" height="35" rx="4" fill="white" opacity="0.9"/>
+                        <text x="47" y="68" text-anchor="middle" fill="#d97706" font-size="8" font-weight="bold">OoO (CPU)</text>
+                        <text x="152" y="68" text-anchor="middle" fill="#d97706" font-size="8" font-weight="bold">Static (NPU)</text>
+                    </g>
+                </g>
+                
+                <!-- Arrow 3-4 -->
+                <path d="M 900 150 L 940 150" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
+                
+                <!-- Phase 4 -->
+                <g transform="translate(950, 70)">
+                    <rect x="0" y="0" width="200" height="160" rx="12" fill="url(#grad4)" filter="url(#shadow)"/>
+                    <text x="100" y="28" text-anchor="middle" fill="white" font-size="15" font-weight="bold">阶段 4</text>
+                    <text x="100" y="45" text-anchor="middle" fill="white" font-size="10" opacity="0.9">Memory & I/O</text>
+                    <g transform="translate(25, 65)">
+                        <rect x="0" y="0" width="150" height="25" rx="3" fill="white" opacity="0.9"/>
+                        <rect x="0" y="32" width="150" height="25" rx="3" fill="white" opacity="0.9"/>
+                        <rect x="0" y="64" width="150" height="25" rx="3" fill="white" opacity="0.9"/>
+                        <text x="75" y="17" text-anchor="middle" fill="#6d28d9" font-size="9" font-weight="bold">LSU</text>
+                        <text x="75" y="49" text-anchor="middle" fill="#6d28d9" font-size="9" font-weight="bold">Cache</text>
+                        <text x="75" y="81" text-anchor="middle" fill="#6d28d9" font-size="9" font-weight="bold">DRAM</text>
+                    </g>
+                </g>
+                
+                <!-- CPU Branch -->
+                <g transform="translate(50, 260)">
+                    <rect x="0" y="0" width="550" height="180" rx="12" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+                    <text x="275" y="28" text-anchor="middle" fill="#1e40af" font-size="16" font-weight="bold">🖥️ Claw-C (CPU 模式)</text>
+                    <text x="275" y="48" text-anchor="middle" fill="#3b82f6" font-size="11">乱序执行 + 分支预测 + 动态调度</text>
+                    <g transform="translate(25, 70)">
+                        <rect x="0" y="0" width="90" height="35" rx="4" fill="white" stroke="#3b82f6"/>
+                        <rect x="105" y="0" width="90" height="35" rx="4" fill="white" stroke="#3b82f6"/>
+                        <rect x="210" y="0" width="90" height="35" rx="4" fill="white" stroke="#3b82f6"/>
+                        <rect x="315" y="0" width="90" height="35" rx="4" fill="white" stroke="#3b82f6"/>
+                        <rect x="420" y="0" width="90" height="35" rx="4" fill="white" stroke="#3b82f6"/>
+                        <text x="45" y="22" text-anchor="middle" fill="#1e40af" font-size="9">Fetch</text>
+                        <text x="150" y="22" text-anchor="middle" fill="#1e40af" font-size="9">Decode</text>
+                        <text x="255" y="22" text-anchor="middle" fill="#1e40af" font-size="9">Issue (8)</text>
+                        <text x="360" y="22" text-anchor="middle" fill="#1e40af" font-size="9">Execute</text>
+                        <text x="465" y="22" text-anchor="middle" fill="#1e40af" font-size="9">Commit</text>
+                        <path d="M 90 17 L 105 17" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        <path d="M 195 17 L 210 17" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        <path d="M 300 17 L 315 17" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        <path d="M 405 17 L 420 17" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    </g>
+                    <text x="20" y="130" fill="#3b82f6" font-size="10">✓ 8-way OoO</text>
+                    <text x="20" y="150" fill="#3b82f6" font-size="10">✓ Branch Prediction</text>
+                    <text x="200" y="130" fill="#3b82f6" font-size="10">✓ 32-entry ROB</text>
+                    <text x="200" y="150" fill="#3b82f6" font-size="10">✓ Speculative Exec</text>
+                    <text x="380" y="130" fill="#3b82f6" font-size="10">✓ 2.1 GHz</text>
+                    <text x="380" y="150" fill="#3b82f6" font-size="10">✓ CoreMark: 4.4</text>
+                </g>
+                
+                <!-- NPU Branch -->
+                <g transform="translate(620, 260)">
+                    <rect x="0" y="0" width="530" height="180" rx="12" fill="#d1fae5" stroke="#10b981" stroke-width="2"/>
+                    <text x="265" y="28" text-anchor="middle" fill="#065f46" font-size="16" font-weight="bold">🧠 Claw-N (NPU 模式)</text>
+                    <text x="265" y="48" text-anchor="middle" fill="#059669" font-size="11">脉动阵列 + 静态调度 + 数据流优化</text>
+                    <g transform="translate(150, 70)">
+                        <rect x="0" y="0" width="28" height="28" rx="2" fill="white" stroke="#10b981"/>
+                        <rect x="35" y="0" width="28" height="28" rx="2" fill="white" stroke="#10b981"/>
+                        <rect x="70" y="0" width="28" height="28" rx="2" fill="white" stroke="#10b981"/>
+                        <rect x="105" y="0" width="28" height="28" rx="2" fill="white" stroke="#10b981"/>
+                        <rect x="0" y="35" width="28" height="28" rx="2" fill="white" stroke="#10b981"/>
+                        <rect x="35" y="35" width="28" height="28" rx="2" fill="white" stroke="#10b981"/>
+                        <rect x="70" y="35" width="28" height="28" rx="2" fill="white" stroke="#10b981"/>
+                        <rect x="105" y="35" width="28" height="28" rx="2" fill="white" stroke="#10b981"/>
+                        <rect x="0" y="70" width="28" height="28" rx="2" fill="white" stroke="#10b981"/>
+                        <rect x="35" y="70" width="28" height="28" rx="2" fill="white" stroke="#10b981"/>
+                        <rect x="70" y="70" width="28" height="28" rx="2" fill="white" stroke="#10b981"/>
+                        <rect x="105" y="70" width="28" height="28" rx="2" fill="white" stroke="#10b981"/>
+                        <text x="14" y="18" text-anchor="middle" fill="#059669" font-size="7">PE</text>
+                        <text x="49" y="18" text-anchor="middle" fill="#059669" font-size="7">PE</text>
+                        <text x="84" y="18" text-anchor="middle" fill="#059669" font-size="7">PE</text>
+                        <text x="119" y="18" text-anchor="middle" fill="#059669" font-size="7">PE</text>
+                        <text x="14" y="53" text-anchor="middle" fill="#059669" font-size="7">PE</text>
+                        <text x="49" y="53" text-anchor="middle" fill="#059669" font-size="7">PE</text>
+                        <text x="84" y="53" text-anchor="middle" fill="#059669" font-size="7">PE</text>
+                        <text x="119" y="53" text-anchor="middle" fill="#059669" font-size="7">PE</text>
+                        <text x="14" y="88" text-anchor="middle" fill="#059669" font-size="7">PE</text>
+                        <text x="49" y="88" text-anchor="middle" fill="#059669" font-size="7">PE</text>
+                        <text x="84" y="88" text-anchor="middle" fill="#059669" font-size="7">PE</text>
+                        <text x="119" y="88" text-anchor="middle" fill="#059669" font-size="7">PE</text>
+                    </g>
+                    <text x="265" y="160" text-anchor="middle" fill="#059669" font-size="11">16×16 Systolic Array (256 PEs)</text>
+                    <text x="20" y="130" fill="#059669" font-size="10">✓ Static Timing</text>
+                    <text x="20" y="150" fill="#059669" font-size="10">✓ Weight Broadcast</text>
+                    <text x="200" y="130" fill="#059669" font-size="10">✓ Dataflow Opt</text>
+                    <text x="200" y="150" fill="#059669" font-size="10">✓ DMA Control</text>
+                    <text x="380" y="130" fill="#059669" font-size="10">✓ 1.8 GHz</text>
+                    <text x="380" y="150" fill="#059669" font-size="10">✓ 145% Efficiency</text>
+                </g>
+                
+                <!-- Metrics -->
+                <g transform="translate(50, 470)">
+                    <text x="550" y="0" text-anchor="middle" font-size="16" font-weight="bold" fill="#1e293b">性能指标</text>
+                    <g transform="translate(0, 20)">
+                        <rect x="0" y="0" width="200" height="90" rx="8" fill="#eff6ff" stroke="#3b82f6"/>
+                        <text x="100" y="35" text-anchor="middle" fill="#1d4ed8" font-size="28" font-weight="bold">11×</text>
+                        <text x="100" y="55" text-anchor="middle" fill="#3b82f6" font-size="11">开发速度提升</text>
+                        <text x="100" y="75" text-anchor="middle" fill="#64748b" font-size="9">2 人月 vs 24 人月</text>
+                    </g>
+                    <g transform="translate(220, 20)">
+                        <rect x="0" y="0" width="200" height="90" rx="8" fill="#f0fdf4" stroke="#10b981"/>
+                        <text x="100" y="35" text-anchor="middle" fill="#065f46" font-size="28" font-weight="bold">92%</text>
+                        <text x="100" y="55" text-anchor="middle" fill="#059669" font-size="11">A72 核心性能</text>
+                        <text x="100" y="75" text-anchor="middle" fill="#64748b" font-size="9">CoreMark/MHz</text>
+                    </g>
+                    <g transform="translate(440, 20)">
+                        <rect x="0" y="0" width="200" height="90" rx="8" fill="#fef3c7" stroke="#f59e0b"/>
+                        <text x="100" y="35" text-anchor="middle" fill="#92400e" font-size="28" font-weight="bold">8-way</text>
+                        <text x="100" y="55" text-anchor="middle" fill="#d97706" font-size="11">自动乱序发射</text>
+                        <text x="100" y="75" text-anchor="middle" fill="#64748b" font-size="9">Out-of-Order</text>
+                    </g>
+                    <g transform="translate(660, 20)">
+                        <rect x="0" y="0" width="200" height="90" rx="8" fill="#f5f3ff" stroke="#8b5cf6"/>
+                        <text x="100" y="35" text-anchor="middle" fill="#5b21b6" font-size="28" font-weight="bold">256</text>
+                        <text x="100" y="55" text-anchor="middle" fill="#7c3aed" font-size="11">PE 阵列 (NPU)</text>
+                        <text x="100" y="75" text-anchor="middle" fill="#64748b" font-size="9">16×16 Systolic</text>
+                    </g>
+                    <g transform="translate(880, 20)">
+                        <rect x="0" y="0" width="200" height="90" rx="8" fill="#fce7f3" stroke="#ec4899"/>
+                        <text x="100" y="35" text-anchor="middle" fill="#9d174d" font-size="28" font-weight="bold">7nm</text>
+                        <text x="100" y="55" text-anchor="middle" fill="#db2777" font-size="11">TSMC 工艺验证</text>
+                        <text x="100" y="75" text-anchor="middle" fill="#64748b" font-size="9">Silicon Proven</text>
+                    </g>
+                </g>
+                
+                <!-- Footer -->
+                <text x="600" y="735" text-anchor="middle" fill="#64748b" font-size="10">
+                    ClawFlowGen: Physically-Parallel Evolutionary Processor Generator | 联系: xiao.lin@ia.ac.cn | @openclawdchip
+                </text>
+            </svg>
+        </div>
+        
+        <!-- Legend -->
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);"></div>
+                <span>物理平铺</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #10b981, #047857);"></div>
+                <span>自动互连</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #f59e0b, #d97706);"></div>
+                <span>控制坍缩</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);"></div>
+                <span>存储外围</span>
+            </div>
+        </div>
+        
+        <!-- Info Cards -->
+        <div class="info-cards">
+            <div class="info-card">
+                <h3>🎯 核心思想</h3>
+                <p>"所有数字电路在物理上都是并行的。" ClawFlowGen 不再将处理器视为执行指令的串行机器，而是将其建模为自组织的并发数据流拓扑。</p>
+            </div>
+            <div class="info-card" style="border-left-color: #10b981;">
+                <h3>🔄 演化算法</h3>
+                <p>通过四阶段"生长"过程——从运算算子平铺、数据流互连、控制逻辑坍缩到存储集成，自动生成完整的 CPU 或 NPU。</p>
+            </div>
+            <div class="info-card" style="border-left-color: #f59e0b;">
+                <h3>📊 实验验证</h3>
+                <p>在 7nm 工艺下流片验证，自动生成的 8 发射 CPU 达到 Cortex-A72 92% 的性能，开发周期缩短 11 倍。</p>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="index.html" class="download-btn">查看交互式演示 →</a>
+        </div>
+    </div>
+</body>
+</html>
