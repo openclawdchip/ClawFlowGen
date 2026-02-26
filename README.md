@@ -10,10 +10,17 @@
 
 ClawFlowGen 是一个基于"物理并行性"思想的敏捷硬件开发框架。它颠覆了传统的处理器设计范式，将芯片视为自组织的并发数据流拓扑，通过四阶段演化算法自动生成高性能 CPU 和 NPU。
 
-## 🌐 交互式论文演示
+## 🌐 可视化展示
 
-我们提供了一个交互式 HTML 页面来展示论文的核心概念：
+### 1. 概念架构图
+静态 SVG 概念图，展示 ClawFlowGen 的完整架构：
+- **查看**: [concept.html](concept.html)
+- 四阶段演化流程
+- CPU vs NPU 架构对比
+- 关键性能指标
 
+### 2. 交互式论文演示
+交互式 HTML 页面来展示论文的核心概念：
 - **在线演示**: [https://openclawdchip.github.io/clawflowgen/](https://openclawdchip.github.io/clawflowgen/) (GitHub Pages)
 - **本地查看**: 直接在浏览器中打开 `index.html`
 
