@@ -1,0 +1,71 @@
+% Figure 4: P-Scaling and Phase Transitions
+\documentclass[tikz,border=10pt]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes,calc,fit,backgrounds}
+
+\begin{document}
+\begin{tikzpicture}[
+    node distance=1cm,
+    phase/.style={rectangle, draw, fill=blue!10, minimum width=3cm, minimum height=1.5cm, align=center, font=\small},
+    arrow/.style={-{Stealth[length=3mm]}, very thick}
+]
+
+% Title
+\node[font=\large\bfseries] at (0,4) {Figure 4: Architectural Phase Transitions vs. Parallelism ($P$)};
+
+% X-axis
+\draw[thick,-{Stealth}] (-7,-2) -- (7,-2) node[right] {$P$};
+
+% Phase regions
+\node[phase, fill=green!15] (p1) at (-5,0) {\textbf{Region I}\\Centralized\\$P \\leq 16$};
+\node[phase, fill=yellow!15] (p2) at (0,0) {\textbf{Region II}\\Hierarchical\\$P \\approx 32$};
+\node[phase, fill=red!15] (p3) at (5,0) {\textbf{Region III}\\Systolic Array\\$P \\geq 256$};
+
+% Labels on axis
+\foreach \x/\label in {-5/16, 0/32, 5/256} {
+    \draw[thick] (\x,-2) -- (\x,-2.2);
+    \node[below, font=\small] at (\x,-2.2) {$\label$};
+}
+
+% Arrows
+\draw[arrow] (p1) -- (p2);
+\draw[arrow] (p2) -- (p3);
+
+% Architecture illustrations
+\begin{scope}[shift={(-5,-4.5)}, scale=0.5]
+    \node[draw, fill=blue!20, minimum width=1cm] at (0,0) {Ctrl};
+    \foreach \i in {-1,0,1} {
+        \node[draw, fill=cyan!20, minimum width=0.6cm] at (\i*0.7-0.35,-1) {};
+    }
+    \node[font=\tiny] at (0,-2) {CPU-like};
+\end{scope}
+
+\begin{scope}[shift={(0,-4.5)}, scale=0.5]
+    \node[draw, fill=blue!20, minimum width=0.8cm] at (-1,0) {L2};
+    \node[draw, fill=blue!20, minimum width=0.8cm] at (1,0) {L2};
+    \foreach \i in {-1,0,1} {
+        \foreach \j in {0,-1} {
+            \node[draw, fill=cyan!20, minimum width=0.5cm] at (\i*0.8-0.4,\j*0.6-1) {};
+        }
+    }
+    \node[font=\tiny] at (0,-2.5) {Hierarchical};
+\end{scope}
+
+\begin{scope}[shift={(5,-4.5)}, scale=0.5]
+    \foreach \i in {-1,0,1} {
+        \foreach \j in {-1,0,1} {
+            \node[draw, fill=cyan!20, minimum width=0.5cm] at (\i*0.6,\j*0.6) {};
+        }
+    }
+    \draw[thick,->] (-1,-1.5) -- (1,-1.5);
+    \draw[thick,->] (-1.5,-1) -- (-1.5,1);
+    \node[font=\tiny] at (0,-2.5) {Systolic};
+\end{scope}
+
+% Key insight
+\node[draw, fill=gray!10, align=left, font=\small, text width=12cm] at (0,-6) {
+    \textbf{Key Insight:} As $P$ increases, ClawFlowGen autonomously discovers appropriate macro-architectural \\ organizations through emergent phase transitions, trading control complexity for spatial parallelism.
+};
+
+\end{tikzpicture}
+\end{document}
