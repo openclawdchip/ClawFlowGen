@@ -1,0 +1,72 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clawflowgen"
+version = "0.1.0"
+description = "Physically-Parallel Evolutionary Processor Generator"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "OpenClaw Research Team", email = "xiao.lin@ia.ac.cn"}
+]
+keywords = ["hardware", "hdl", "processor", "cpu", "npu", "eda", "rtl"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "openclaw>=2.0.0",
+    "numpy>=1.21.0",
+    "pyyaml>=6.0",
+    "jinja2>=3.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=3.0.0",
+    "black>=22.0.0",
+    "flake8>=4.0.0",
+    "mypy>=0.950",
+]
+
+[project.urls]
+Homepage = "https://github.com/openclawdchip/clawflowgen"
+Documentation = "https://docs.clawflowgen.ai"
+Repository = "https://github.com/openclawdchip/clawflowgen"
+Issues = "https://github.com/openclawdchip/clawflowgen/issues"
+
+[project.scripts]
+clawflowgen = "clawflowgen.cli:main"
+
+[tool.black]
+line-length = 100
+target-version = ['py39', 'py310', 'py311']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "--cov=clawflowgen --cov-report=term-missing"
