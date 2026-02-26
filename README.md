@@ -12,14 +12,20 @@ ClawFlowGen 是一个基于"物理并行性"思想的敏捷硬件开发框架。
 
 ## 🌐 可视化展示
 
-### 1. 概念架构图
+### 1. 技术博客系列 (10篇)
+深度解读 ClawFlowGen 的完整技术博客系列：
+- **阅读**: [blog-series/README.md](blog-series/README.md)
+- 冯·诺依曼的黄昏 → 核心哲学 → 技术基石 → 实证分析 → 深远影响 → 未来展望
+- 系统了解"自生长"硬件技术
+
+### 2. 概念架构图
 静态 SVG 概念图，展示 ClawFlowGen 的完整架构：
 - **查看**: [concept.html](concept.html)
 - 四阶段演化流程
 - CPU vs NPU 架构对比
 - 关键性能指标
 
-### 2. 交互式论文演示
+### 3. 交互式论文演示
 交互式 HTML 页面来展示论文的核心概念：
 - **在线演示**: [https://openclawdchip.github.io/clawflowgen/](https://openclawdchip.github.io/clawflowgen/) (GitHub Pages)
 - **本地查看**: 直接在浏览器中打开 `index.html`
