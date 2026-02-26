@@ -6,7 +6,7 @@
 
 ## 引言：一场关于硬件设计的范式革命
 
-![ClawFlowGen 概念图](https://raw.githubusercontent.com/openclaw/clawflowgen/main/assets/hero_image.png)
+![ClawFlowGen 概念图](../assets/hero_image.png)
 
 作为一名深耕芯片设计领域多年的工程师，我曾无数次在深夜对着 Verilog 代码发呆：这真的是设计芯片的最佳方式吗？
 
