@@ -10,6 +10,19 @@
 
 ClawFlowGen 是一个基于"物理并行性"思想的敏捷硬件开发框架。它颠覆了传统的处理器设计范式，将芯片视为自组织的并发数据流拓扑，通过四阶段演化算法自动生成高性能 CPU 和 NPU。
 
+## 🌐 交互式论文演示
+
+我们提供了一个交互式 HTML 页面来展示论文的核心概念：
+
+- **在线演示**: [https://openclawdchip.github.io/clawflowgen/](https://openclawdchip.github.io/clawflowgen/) (GitHub Pages)
+- **本地查看**: 直接在浏览器中打开 `index.html`
+
+**功能特点**:
+- 🎮 三阶段演化模型可视化（物理平铺 → 互连 → 指令映射）
+- 📊 实时性能数据图表（使用 Chart.js）
+- 🧮 自动仲裁算法交互演示
+- 📱 响应式设计，支持移动端
+
 ## 🎯 核心思想
 
 传统处理器设计受限于软件思维的串行约束。ClawFlowGen 基于**"所有数字电路在物理上都是并行的"**这一核心真理，采用"由内而外"的生长式方法：
@@ -25,7 +38,7 @@ ClawFlowGen 是一个基于"物理并行性"思想的敏捷硬件开发框架。
 
 ```bash
 # 克隆仓库
-git clone https://github.com/yourusername/clawflowgen.git
+git clone https://github.com/openclawdchip/clawflowgen.git
 cd clawflowgen
 
 # 安装依赖
@@ -133,7 +146,8 @@ cache = AutoCache(
 - [API 参考](docs/api.md)
 - [架构设计文档](docs/architecture.md)
 - [实验数据报告](docs/benchmarks.md)
-- [学术论文](paper/main.pdf)
+- [学术论文](paper/main.md) (Markdown 版本)
+- [学术论文](paper/main.pdf) (PDF 版本)
 
 ## 🔬 实验验证
 
@@ -153,9 +167,10 @@ cache = AutoCache(
 
 **"ClawFlowGen: A Physically-Parallel Evolutionary Methodology for Automatic Processor Generation"**
 
-- [PDF 下载](paper/main.pdf)
+- [Markdown 版本](paper/main.md) - 适合在线阅读
+- [PDF 版本](paper/main.pdf) - 完整排版
 - [补充材料](paper/supplementary/)
-- [实验数据](paper/data/)
+- [交互式演示](index.html)
 
 ## 🤝 贡献
 
